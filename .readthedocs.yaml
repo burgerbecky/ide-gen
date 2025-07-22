@@ -1,0 +1,59 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# burger needs doxypypy, graphviz, and doxygen to build the docs.
+
+# The version of doxypypy that's in pypi.org is outdated, so the most recent
+# version must be pulled from github and installed manually.
+#
+# Since Python 3.9, commonmark, setuptools and distlib have issues so they
+# too need to be updated to the latest version to work. Thankfully, they
+# simply need to be pulled down using pip without any issues.
+#
+# graphviz is not version dependent, so the version supplied by apt-get will
+# suffice.
+#
+
+# Required
+version: 2
+
+# Point to the conf.py file
+sphinx:
+  configuration: docs/conf.py
+
+# Build all sphinx docs
+formats: all
+
+# Set up all the requirements for python building
+python:
+  install:
+    - requirements: docs/requirements.txt
+
+# Use latest Ubuntu, python and graphviz
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3"
+  apt_packages:
+    - graphviz
+  jobs:
+    post_checkout:
+      - git clone https://github.com/Feneric/doxypypy.git
+
+    # Python requires these modules updated
+    # doxypypy needs to be updated manually
+    post_install:
+      # Debug the environment variables
+      - export
+      # Make sure doxygen is the latest version
+      - curl --no-progress-meter -O http://logicware.com/downloads/linux/doxygen-1.14.0.tgz
+      - tar -xvf doxygen-1.14.0.tgz
+      # Copy into the path and show version
+      - cp doxygen $READTHEDOCS_VIRTUALENV_PATH/bin
+      - doxygen -V
+      # Make sure makeprojects is loaded
+      - buildme -h
+      # Install Doxypypy
+      - ${READTHEDOCS_VIRTUALENV_PATH}/bin/python -m pip install ./doxypypy
+
