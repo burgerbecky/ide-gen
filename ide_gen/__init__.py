@@ -58,6 +58,7 @@ from __future__ import absolute_import
 import sys
 
 from .hashes import xcode_calcuuid, vs_calcguid
+from .string_utils import xcode_quote_string_if_needed
 
 ########################################
 
@@ -91,5 +92,6 @@ __copyright__ = "Copyright 2025 Rebecca Ann Heineman"
 # Items to import on "from ide_gen import *"
 __all__ = [
     "xcode_calcuuid",
-    "vs_calcguid"
+    "vs_calcguid",
+    "xcode_quote_string_if_needed"
 ]
