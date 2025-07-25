@@ -36,7 +36,7 @@ class JSONShared(object):
     Attributes:
         name: Object's name (Can also be the uuid)
         comment: Optional object's comment field
-        uuid: Optional uuid
+        uuid: Optional uuid string
         enabled: If False, disable output of this object.
         value: Value (Can be None, integer, string, array, or JSON object)
     """
@@ -47,7 +47,7 @@ class JSONShared(object):
     def __init__(self, name, comment=None, uuid=None,
                  enabled=True, value=None):
         """
-        Initialize the JSONRoot entry.
+        Initialize the JSONShared entry.
 
         Args:
             name: Name of this object
@@ -68,8 +68,12 @@ class JSONShared(object):
     def add_item(self, item):
         """
         Append an item to the array.
-
         This is only for JSONDict or JSONDict objects
+
+        Assume the value attribute is an iterable that can be appended
+        and perform an append() operation on the attribute with the
+        item parameter. If value cannot be appended, an exception is
+        thrown.
 
         Args:
             item: JSONShared based object.
@@ -82,8 +86,10 @@ class JSONShared(object):
     def find_item(self, name):
         """
         Find a named JSON item.
-
-        Iterate over the JSON objects and locate one by name.
+        Iterate over the JSON objects and locate one by name. This
+        function assumes the value attribute is an iterable of JSON
+        objects. An assert will be thrown if the iterable doesn't have
+        objects with ``name`` attributes.
 
         Args:
             name: Name of the item to locate
@@ -103,11 +109,12 @@ class JSONShared(object):
     def get_comment_string(self):
         """
         Return the string to generate for a comment.
-
         If the JSON object has a comment, return the string surrounded
         by ANSI "C" style quotes with a space prefix.
 
         Otherwise, return an empty string.
+
+        Example returned string is " /* comment */"
 
         Returns:
             Empty string, or string with C quotes.
