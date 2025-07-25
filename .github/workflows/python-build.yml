@@ -12,7 +12,7 @@ name: IDE Generator for Python
 on:
   push:
     branches:
-      - "master"
+      - "main"
 
 jobs:
   "Run_Pytest":
