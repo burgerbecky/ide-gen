@@ -45,5 +45,5 @@ size (32 bit or 64 bit) and what platform was used (Windows / Mac OSX / Linux).
 .. |Docs| image:: https://img.shields.io/readthedocs/ide-gen.svg
     :target: http://ide-gen.readthedocs.io
     :alt: Documentation Status
-.. |Versions| image:: https://img.shields.io/pypi/ide-gen/ide-gen.svg
+.. |Versions| image:: https://img.shields.io/pypi/pyversions/ide-gen.svg
     :alt: Supported Python versions

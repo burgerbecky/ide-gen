@@ -18,6 +18,8 @@ This module contains classes needed to generate Xcode JSON objects
 @var ide_gen.xcode_json.TABS
 Default tab format for XCode
 
+@var ide_gen.xcode_json.OBJECT_ORDER
+Names of Xcode objects in the order they are output
 """
 
 # pylint: disable=useless-object-inheritance
@@ -25,12 +27,36 @@ Default tab format for XCode
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+from operator import attrgetter
+
 from .string_utils import xcode_quote_string_if_needed
 
 ########################################
 
 # Default tab format for XCode
 TABS = "\t"
+
+# This is the order of XCode chunks that match the way
+# that XCode outputs them.
+OBJECT_ORDER = (
+    "PBXAggregateTarget",
+    "PBXBuildFile",
+    "PBXBuildRule",
+    "PBXContainerItemProxy",
+    "PBXCopyFilesBuildPhase",
+    "PBXFileReference",
+    "PBXFrameworksBuildPhase",
+    "PBXGroup",
+    "PBXNativeTarget",
+    "PBXProject",
+    "PBXReferenceProxy",
+    "PBXResourcesBuildPhase",
+    "PBXShellScriptBuildPhase",
+    "PBXSourcesBuildPhase",
+    "PBXTargetDependency",
+    "XCBuildConfiguration",
+    "XCConfigurationList"
+)
 
 ########################################
 
@@ -464,5 +490,128 @@ class JSONDict(JSONShared):
             item.generate(line_list, indent)
 
         # Generate the dictionary closing
+        line_list.append("{}}};".format(tabs))
+        return 0
+
+########################################
+
+
+class JSONObjects(JSONDict):
+    """
+    XCode JSON master object list object.
+
+    Xcode has a master object record called ``objects`` which displays a
+    special comment before emitting each sub record. This class implements
+    this special case.
+
+    Each record has a prefix and suffix comment, denoting what records are
+    being output.
+
+    Note:
+        This is always named ``objects``
+    """
+
+    def __init__(self, name, uuid=None, enabled=True):
+        """
+        Initialize the entry.
+
+        Args:
+            name: Name of this object
+            uuid: uuid hash of the object
+            enabled: If False, don't output this object in the generated object.
+        """
+
+        JSONDict.__init__(self, name, uuid=uuid, enabled=enabled)
+
+    ########################################
+
+    def get_entries(self, isa):
+        """
+        Return a list of items that match the isa name.
+
+        Args:
+            isa: isa name string.
+        Returns:
+            List of entires found, can be an empty list.
+        """
+
+        # Return a list of items that match the attribute isa
+        return [i for i in self.value if i.isa == isa]
+
+    ########################################
+
+    def generate(self, line_list, indent=0):
+        """
+        Generate the text lines for this JSON element.
+        The objects are generated in OBJECT_ORDER order.
+
+        Note:
+            This can generate multiple lines of text.
+
+        Args:
+            line_list: list object to have text lines appended to
+            indent: number of tabs to insert (For recursion)
+        """
+
+        # Is this object enabled?
+        if not self.enabled:
+            return 0
+
+        # Determine the indentation
+        tabs = TABS * indent
+
+        # Generate the dictionary opening
+        line_list.append("{}{}{} = {{".format(
+            tabs, self.name, self.get_comment_string()))
+
+        # Indent all future entries
+        indent = indent + 1
+
+        # Output the objects in "isa" order for XCode
+        for object_group in OBJECT_ORDER:
+
+            # Find all entries by this name
+            item_list = [i for i in self.value if i.isa == object_group]
+
+            # Any items in this group?
+            if item_list:
+
+                # Sort by uuid
+                item_list = sorted(item_list, key=attrgetter("uuid"))
+
+                # Using the name of the class, output the array of data items
+                line_list.append("")
+                line_list.append("/* Begin {} section */".format(object_group))
+
+                for item in item_list:
+
+                    # Because Apple hates me. Check if a record needs to be
+                    # flattened instead of putting the data on individual lines,
+                    # because, just because.
+                    # This is used for filename records
+
+                    if getattr(item, "flattened", None):
+                        # Generate the lines in this fake entry
+                        temp_list = []
+
+                        # Create the text
+                        item.generate(temp_list, 0)
+
+                        # Flatten it and strip the tabs
+                        temp = " ".join(temp_list).replace(TABS, "")
+
+                        # Remove this space to match the output of XCode
+                        temp = temp.replace(" isa", "isa")
+
+                        # Insert the flattened line with extra indentation
+                        line_list.append(tabs + TABS + temp)
+                        continue
+
+                    # Output the item as is with extra indentation
+                    item.generate(line_list, indent)
+
+                line_list.append("/* End {} section */".format(object_group))
+
+        # Close the dictionary and exit
         line_list.append("{}}};".format(tabs))
         return 0

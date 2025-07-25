@@ -59,7 +59,8 @@ import sys
 
 from .hashes import xcode_calcuuid, vs_calcguid
 from .string_utils import xcode_quote_string_if_needed
-from .xcode_json import JSONShared, JSONEntry, JSONArray, JSONDict
+from .xcode_json import JSONShared, JSONEntry, JSONArray, JSONDict, \
+    JSONObjects
 
 ########################################
 
@@ -98,5 +99,6 @@ __all__ = [
     "JSONShared",
     "JSONEntry",
     "JSONArray",
-    "JSONDict"
+    "JSONDict",
+    "JSONObjects"
 ]

@@ -23,3 +23,8 @@ xcode_json.JSONDict
 ^^^^^^^^^^^^^^^^^^^
 .. doxygenclass:: ide_gen::xcode_json::JSONDict
     :members:
+
+xcode_json.JSONObjects
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: ide_gen::xcode_json::JSONObjects
+    :members:

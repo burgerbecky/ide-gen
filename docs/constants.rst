@@ -48,3 +48,7 @@ Configurations
 xcode_json.TABS
 ^^^^^^^^^^^^^^^
 .. doxygenvariable:: ide_gen::xcode_json::TABS
+
+xcode_json.OBJECT_ORDER
+^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenvariable:: ide_gen::xcode_json::OBJECT_ORDER
