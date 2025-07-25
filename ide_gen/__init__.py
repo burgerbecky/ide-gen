@@ -59,6 +59,7 @@ import sys
 
 from .hashes import xcode_calcuuid, vs_calcguid
 from .string_utils import xcode_quote_string_if_needed
+from .xcode_json import JSONShared
 
 ########################################
 
@@ -93,5 +94,6 @@ __copyright__ = "Copyright 2025 Rebecca Ann Heineman"
 __all__ = [
     "xcode_calcuuid",
     "vs_calcguid",
-    "xcode_quote_string_if_needed"
+    "xcode_quote_string_if_needed",
+    "JSONShared"
 ]
