@@ -33,10 +33,10 @@ If you find a bug, issue or have a feature request, please submit a bug report
 by emailing becky@burgerbecky.com and mention python version, integer
 size (32 bit or 64 bit) and what platform was used (Windows / Mac OSX / Linux).
 
-.. |PyPi| image:: https://img.shields.io/pypi/v/burger.svg
+.. |PyPi| image:: https://img.shields.io/pypi/v/ide-gen.svg
     :target: https://pypi.org/project/ide-gen/
     :alt: Pypi Version
-.. |License| image:: https://img.shields.io/pypi/l/burger.svg
+.. |License| image:: https://img.shields.io/pypi/l/ide-gen.svg
     :target: https://github.com/burgerbecky/ide-gen/blob/master/LICENSE.txt
     :alt: License
 .. |GithubActions| image:: https://github.com/burgerbecky/ide-gen/actions/workflows/python-build.yml/badge.svg
