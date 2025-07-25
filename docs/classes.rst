@@ -13,3 +13,13 @@ xcode_json.JSONEntry
 ^^^^^^^^^^^^^^^^^^^^
 .. doxygenclass:: ide_gen::xcode_json::JSONEntry
     :members:
+
+xcode_json.JSONArray
+^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: ide_gen::xcode_json::JSONArray
+    :members:
+
+xcode_json.JSONDict
+^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: ide_gen::xcode_json::JSONDict
+    :members:

@@ -185,28 +185,284 @@ class JSONEntry(JSONShared):
         # Determine the indentation
         tabs = TABS * indent
 
-        # Get the value string if any
-        if self.value is None:
-
-            # Don't output a value, and use a comma suffix
-            value = ""
-            suffix = ","
-
-        else:
-            # Add an assignment operator, quote the string
-            # and add a semicolon suffix
-            value = " = " + xcode_quote_string_if_needed(self.value)
-            suffix = ";"
-
         # Set the comment string, if any
         comment = self.get_comment_string()
 
-        # Generate the JSON line
-        line_list.append(
-            "{}{}{}{}{}".format(
-                tabs,
-                xcode_quote_string_if_needed(self.name),
-                value,
-                comment,
-                suffix))
+        # Get the value string if any
+        if self.value is None:
+
+            # Generate just the value with a comma
+            line_list.append(
+                "{}{}{},".format(
+                    tabs,
+                    xcode_quote_string_if_needed(self.name),
+                    comment))
+        else:
+            # Generate the JSON assignment line
+            line_list.append(
+                "{}{} = {}{};".format(
+                    tabs,
+                    xcode_quote_string_if_needed(self.name),
+                    xcode_quote_string_if_needed(self.value),
+                    comment))
+        return 0
+
+########################################
+
+
+class JSONArray(JSONShared):
+    """
+    XCode JSON array.
+
+    Each JSON entry for XCode consists of the name followed by an optional
+    comment, and an optional value.
+
+    This JSON object handles data that can be output in the form of an array.
+    If fold_array is set to True, single entry arrays are output as a single
+    entry without encapsulating parenthesis.
+
+    Attributes:
+        disable_if_empty: True if output is disabled if the list is empty
+        fold_array: True if one entry array is output as JSONEntry
+    """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+
+    def __init__(self, name, comment=None, value=None,
+                 enabled=True, disable_if_empty=False, fold_array=False):
+        """
+        Initialize the entry.
+
+        Args:
+            name: Name of this object
+            comment: Optional comment
+            value: List of default values
+            enabled: If False, don't output this object in the generated object.
+            disable_if_empty: If True, don't output if no items in the list.
+            fold_array: True if the array should be an entry if only one element
+        """
+
+        # Arrays require an iterable. Convert None to an
+        # empty array to allow generation
+        if value is None:
+            value = []
+
+        # Init shared variables
+        JSONShared.__init__(
+            self, name, comment, value,
+            enabled=enabled)
+
+        # If the array is empty, don't print
+        self.disable_if_empty = disable_if_empty
+
+        # Default array folding
+        self.fold_array = fold_array
+
+    ########################################
+
+    def add_string_entry(self, name):
+        """
+        Create a new JSONEntry record and add to the array.
+        Take the string passed in and append it to the end of the array.
+
+        The JSONEntry will have it's name set to the input string. All other
+        attributes are set to defaults.
+
+        Args:
+            name: String to append to the array
+        Returns:
+            JSONEntry created that was added
+        """
+
+        # Create a JSONEntry so it's stored as just a name
+        new_entry = JSONEntry(name)
+
+        # Append to the array
+        self.add_item(new_entry)
+
+        # Return the original item in case the caller wants to
+        # perform additional actions on it.
+        return new_entry
+
+    ########################################
+
+    def generate(self, line_list, indent=0):
+        """
+        Generate the text lines for this JSON element.
+
+        Note:
+            This can generate multiple lines of text when outputting
+            a multi entry array.
+
+        Args:
+            line_list: list object to have text lines appended to
+            indent: number of tabs to insert (For recursion)
+        """
+
+        # Is this object disabled?
+        if not self.enabled:
+            return 0
+
+        # Disable if there are no values?
+        if self.disable_if_empty and not self.value:
+            return 0
+
+        # Determine the indentation
+        tabs = TABS * indent
+
+        # Get the optional comment
+        comment = self.get_comment_string()
+
+        # If there is only one entry, and array folding is enabled,
+        # only output a single item, not an array
+        if self.fold_array and len(self.value) == 1:
+
+            # Output the assignment value
+            line_list.append("{}{}{} = {};".format(
+                tabs, self.name, comment,
+                xcode_quote_string_if_needed(
+                    self.value[0].name)))
+
+        else:
+            # Generate the array opening
+            line_list.append("{}{}{} = (".format(tabs, self.name, comment))
+
+            # Sub entries are indented
+            indent = indent + 1
+
+            # Generate the array
+            for item in self.value:
+                item.generate(line_list, indent)
+
+            # Generate the array closing
+            line_list.append("{});".format(tabs))
+        return 0
+
+########################################
+
+
+class JSONDict(JSONShared):
+    """
+    XCode JSON dictionary
+
+    Each JSON entry for XCode consists of the name followed by an optional
+    comment, and an optional value.
+
+    The entries are encapsulated with curly brackets.
+
+    Attributes:
+        disable_if_empty: True if output is disabled if the list is empty
+        isa: "Is a" name
+        flattened: If True, flatten the child objects
+    """
+
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+
+    def __init__(self, name, comment=None, value=None, uuid=None,
+                 enabled=True, disable_if_empty=False, isa=None,
+                 flattened=False):
+        """
+        Initialize the entry.
+
+        Args:
+            name: Name of this object
+            comment: Optional comment
+            value: List of default values
+            uuid: uuid hash of the object
+            enabled: If False, don't output this object in the generated object.
+            disable_if_empty: If True, don't output if no items in the list.
+            isa: "Is a" type of dictionary object
+            flattened: If True, flatten the child objects
+        """
+
+        # UUID has to be a string
+        if uuid is None:
+            uuid = ""
+
+        # Value must be an iterable array
+        if value is None:
+            value = []
+
+        # Init the shared values
+        JSONShared.__init__(
+            self, name, comment, value, uuid, enabled)
+
+        # Disable if True and empty
+        self.disable_if_empty = disable_if_empty
+
+        # "Is a" class type name
+        self.isa = isa
+
+        # Default flattened state
+        self.flattened = flattened
+
+        # If there is an ISA entry, make it the first value
+        if isa is not None:
+            self.add_dict_entry("isa", isa)
+
+    ########################################
+
+    def add_dict_entry(self, name, value=None):
+        """
+        Create a new JSONEntry record and add to the dictionary
+        Take the key value pair and append it to the dictionary.
+
+        Create a JSONEntry with name as the key and value as the value.
+
+        Args:
+            name: String for the JSONEntry name
+            value: String to use as the value for the entry
+        Returns:
+            JSONEntry created that was added
+        """
+
+        # Create the key/value assignment
+        new_entry = JSONEntry(name, value=value)
+
+        # Add to the array
+        self.add_item(new_entry)
+
+        # Return the value
+        return new_entry
+
+    ########################################
+
+    def generate(self, line_list, indent=0):
+        """
+        Generate the text lines for this JSON element.
+
+        Note:
+            This can generate multiple lines of text.
+
+        Args:
+            line_list: list object to have text lines appended to
+            indent: number of tabs to insert (For recursion)
+        """
+
+        # If disabled, exit
+        if not self.enabled:
+            return 0
+
+        # Disable if there are no values?
+        if self.disable_if_empty and self.value is not None:
+            return 0
+
+        # Determine the indentation
+        tabs = TABS * indent
+
+        # Get the optional comment"
+        comment = self.get_comment_string()
+
+        # Generate the dictionary opening
+        line_list.append("{}{}{} = {{".format(tabs, self.name, comment))
+
+        # Generate the dictionary
+        indent = indent + 1
+        for item in self.value:
+            item.generate(line_list, indent)
+
+        # Generate the dictionary closing
+        line_list.append("{}}};".format(tabs))
         return 0
