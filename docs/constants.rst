@@ -45,4 +45,6 @@ These strings are used for version control and setup.py for distribution.
 Configurations
 --------------
 
-Detect the version of the Python interpreter
+xcode_json.TABS
+^^^^^^^^^^^^^^^
+.. doxygenvariable:: ide_gen::xcode_json::TABS

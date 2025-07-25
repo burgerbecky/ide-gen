@@ -15,6 +15,9 @@ XCode JSON generators
 @package ide_gen.xcode_json
 This module contains classes needed to generate Xcode JSON objects
 
+@var ide_gen.xcode_json.TABS
+Default tab format for XCode
+
 """
 
 # pylint: disable=useless-object-inheritance
@@ -22,6 +25,12 @@ This module contains classes needed to generate Xcode JSON objects
 
 from __future__ import absolute_import, print_function, unicode_literals
 
+from .string_utils import xcode_quote_string_if_needed
+
+########################################
+
+# Default tab format for XCode
+TABS = "\t"
 
 ########################################
 
@@ -36,32 +45,33 @@ class JSONShared(object):
     Attributes:
         name: Object's name (Can also be the uuid)
         comment: Optional object's comment field
+        value: Value (Can be None, integer, string, array, or JSON object)
         uuid: Optional uuid string
         enabled: If False, disable output of this object.
-        value: Value (Can be None, integer, string, array, or JSON object)
+
     """
 
     # pylint: disable=too-many-arguments
     # pylint: disable=too-many-positional-arguments
 
-    def __init__(self, name, comment=None, uuid=None,
-                 enabled=True, value=None):
+    def __init__(self, name, comment=None, value=None, uuid=None,
+                 enabled=True):
         """
         Initialize the JSONShared entry.
 
         Args:
             name: Name of this object
             comment: Optional comment
+            value: Optional value
             uuid: uuid hash of the object
             enabled: If False, don't output this object in the generated object.
-            value: Optional value
         """
 
         self.name = name
         self.comment = comment
+        self.value = value
         self.uuid = uuid
         self.enabled = enabled
-        self.value = value
 
     ########################################
 
@@ -126,3 +136,77 @@ class JSONShared(object):
 
         # Set the comment string
         return " /* {} */".format(self.comment)
+
+
+########################################
+
+
+class JSONEntry(JSONShared):
+    """
+    XCode JSON single line entry.
+    Each JSON entry for XCode consists of the name followed by an optional
+    comment, and an optional value
+    """
+
+    # pylint: disable=too-many-arguments
+
+    def __init__(self, name, comment=None, value=None,
+                 enabled=True):
+        """
+        Initialize the JSONEntry.
+
+        Args:
+            name: Name of this object
+            comment: Optional comment
+            value: Optional value
+            enabled: If False, don't output this object in the generated object.
+        """
+
+        # Init the shared variables
+        JSONShared.__init__(
+            self, name, comment, value,
+            enabled=enabled)
+
+    ########################################
+
+    def generate(self, line_list, indent=0):
+        """
+        Generate the text lines for this JSON element.
+
+        Args:
+            line_list: list object to have text lines appended to
+            indent: Integer number of tabs to insert (For recursion)
+        """
+
+        # Don't output if disabled
+        if not self.enabled:
+            return 0
+
+        # Determine the indentation
+        tabs = TABS * indent
+
+        # Get the value string if any
+        if self.value is None:
+
+            # Don't output a value, and use a comma suffix
+            value = ""
+            suffix = ","
+
+        else:
+            # Add an assignment operator, quote the string
+            # and add a semicolon suffix
+            value = " = " + xcode_quote_string_if_needed(self.value)
+            suffix = ";"
+
+        # Set the comment string, if any
+        comment = self.get_comment_string()
+
+        # Generate the JSON line
+        line_list.append(
+            "{}{}{}{}{}".format(
+                tabs,
+                xcode_quote_string_if_needed(self.name),
+                value,
+                comment,
+                suffix))
+        return 0
