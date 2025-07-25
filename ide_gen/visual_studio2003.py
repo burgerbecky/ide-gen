@@ -25,11 +25,11 @@ def convert_file_name(item):
         String with converted macros
     """
     if is_string(item):
-        item = item.replace('%(RootDir)%(Directory)', '$(InputDir)')
-        item = item.replace('%(FileName)', '$(InputName)')
-        item = item.replace('%(Extension)', '$(InputExt)')
-        item = item.replace('%(FullPath)', '$(InputPath)')
-        item = item.replace('%(Identity)', '$(InputPath)')
+        item = item.replace("%(RootDir)%(Directory)", "$(InputDir)")
+        item = item.replace("%(FileName)", "$(InputName)")
+        item = item.replace("%(Extension)", "$(InputExt)")
+        item = item.replace("%(FullPath)", "$(InputPath)")
+        item = item.replace("%(Identity)", "$(InputPath)")
     return item
 
 class VS2003Global(Object):
@@ -42,7 +42,7 @@ class VS2003Global(Object):
 class VS2003sln(Object):
     def __init__(self, name):
         if not name:
-            name = 'unnamed'
+            name = "unnamed"
         self.name = name
         self.project = []
         self.globals = VS2003Global()
@@ -57,7 +57,7 @@ class VS2003sln(Object):
         line_list = []
 
         line_list.append(
-            'Microsoft Visual Studio Solution File, Format Version 8.00')
+            "Microsoft Visual Studio Solution File, Format Version 8.00")
         for project in self.projects:
             project.generate(self, line_list=line_list, indent=0)
         self.globals.generate(self, line_list=line_list, indent=0)

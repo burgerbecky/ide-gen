@@ -25,7 +25,7 @@ import os
 import sys
 from burger import clean_directories, clean_files, run_command,  \
     lock_files, unlock_files, delete_directory, create_setup_py, \
-    delete_file, __version__
+    delete_file
 
 # If set to True, ``buildme -r``` will not parse directories in this folder.
 BUILDME_NO_RECURSE = False
@@ -41,8 +41,7 @@ CLEANME_DEPENDENCIES = []
 
 # Directories to clean
 CLEAN_DIR_LIST = [
-    "burger.egg-info",
-    "burger-" + __version__,
+    "ide_gen.egg-info",
     "dist",
     "build",
     "temp",

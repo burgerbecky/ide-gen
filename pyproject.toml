@@ -4,15 +4,18 @@ build-backend = "setuptools.build_meta"
 
 [project]
 dynamic = ["version"]
-name = "burger"
+name = "ide_gen"
 authors = [
     { name = "Rebecca Ann Heineman" },
     { email = "becky@burgerbecky.com" },
 ]
-description = "Burger Becky's shared python library."
+description = "IDE Project Generator."
 license = "MIT"
 license-files = ["LICENSE.txt"]
-dependencies = ["setuptools >= 44.0.0", "wslwinreg >= 1.1.2"]
+dependencies = [
+    "setuptools >= 44.0.0",
+    "burger >= 1.5"
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Console",
@@ -51,15 +54,15 @@ keywords = [
 platforms = ["Any"]
 
 [tool.setuptools.dynamic]
-version = { attr = "burger.__version__" }
+version = { attr = "ide_gen.__version__" }
 
 [project.urls]
-Homepage = "https://github.com/burgerbecky/pyburger"
-Documentation = "http://pyburger.readthedocs.io"
-Source = "https://github.com/burgerbecky/pyburger"
+Homepage = "https://github.com/burgerbecky/ide-gen"
+Documentation = "https://ide-gen.readthedocs.io/en/latest/"
+Source = "https://github.com/burgerbecky/ide-gen"
 
 [tool.setuptools.packages.find]
-include = ["burger"]
+include = ["ide_gen"]
 exclude = ["unittests"]
 namespaces = false
 

@@ -1,6 +1,6 @@
-=================
+========================
 IDE Generator for Python
-=================
+========================
 
 |PyPi| |License| |GithubActions| |Docs| |Versions|
 

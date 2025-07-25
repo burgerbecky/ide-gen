@@ -14,6 +14,7 @@ import subprocess
 import os
 import sys
 import errno
+from burger import import_py_script
 
 # Determine if running on "ReadTheDocs.org"
 
@@ -23,7 +24,7 @@ CWD = os.path.dirname(os.path.abspath(__file__))
 # Add this folder to python so it can find the new file
 sys.path.append(os.path.dirname(CWD))
 
-tempmodule = __import__("burger")
+tempmodule = __import__("ide_gen")
 
 # Restore the pathnames
 sys.path.pop()
@@ -252,7 +253,7 @@ def generate_doxygen_xml(app):
 
     # Invoke the prebuild python script to create the README.html
     # file if needed using pandoc
-    build_rules = tempmodule.import_py_script(
+    build_rules = import_py_script(
         os.path.join(CWD, "build_rules.py"))
     build_rules.build(CWD, None)
 
