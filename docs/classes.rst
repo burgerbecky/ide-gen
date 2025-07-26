@@ -28,3 +28,16 @@ xcode_json.JSONObjects
 ^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenclass:: ide_gen::xcode_json::JSONObjects
     :members:
+
+XCode Sections
+--------------
+
+xcode.XCProject
+^^^^^^^^^^^^^^^
+.. doxygenclass:: ide_gen::xcode::XCProject
+    :members:
+
+xcode.PBXFileReference
+^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenclass:: ide_gen::xcode::PBXFileReference
+    :members:

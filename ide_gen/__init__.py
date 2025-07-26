@@ -58,9 +58,11 @@ from __future__ import absolute_import
 import sys
 
 from .hashes import xcode_calcuuid, vs_calcguid
-from .string_utils import xcode_quote_string_if_needed
+from .string_utils import xcode_quote_string_if_needed, \
+    xcode_determine_source_type
 from .xcode_json import JSONShared, JSONEntry, JSONArray, JSONDict, \
     JSONObjects
+from .xcode import XCProject, PBXFileReference
 
 ########################################
 
@@ -96,9 +98,12 @@ __all__ = [
     "xcode_calcuuid",
     "vs_calcguid",
     "xcode_quote_string_if_needed",
+    "xcode_determine_source_type",
     "JSONShared",
     "JSONEntry",
     "JSONArray",
     "JSONDict",
-    "JSONObjects"
+    "JSONObjects",
+    "XCProject",
+    "PBXFileReference"
 ]

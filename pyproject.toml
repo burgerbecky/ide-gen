@@ -14,7 +14,7 @@ license = "MIT"
 license-files = ["LICENSE.txt"]
 dependencies = [
     "setuptools >= 44.0.0",
-    "burger >= 1.5"
+    "burger >= 1.5.1"
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",

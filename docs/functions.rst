@@ -15,6 +15,10 @@ hashes.vs_calcguid
 String Utilities
 ----------------
 
-hashes.xcode_quote_string_if_needed
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+string_utils.xcode_quote_string_if_needed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenfunction:: ide_gen::string_utils::xcode_quote_string_if_needed
+
+string_utils.xcode_determine_source_type
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenfunction:: ide_gen::string_utils::xcode_determine_source_type
