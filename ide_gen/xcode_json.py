@@ -74,6 +74,7 @@ class JSONShared(object):
         value: Value (Can be None, integer, string, array, or JSON object)
         uuid: Optional uuid string
         enabled: If False, disable output of this object.
+        parent: Reference to the parent object
 
     """
 
@@ -98,6 +99,7 @@ class JSONShared(object):
         self.value = value
         self.uuid = uuid
         self.enabled = enabled
+        self.parent = None
 
     ########################################
 
@@ -116,6 +118,9 @@ class JSONShared(object):
         """
 
         self.value.append(item)
+
+        # Mark this object as the item's parent
+        item.parent = self
 
     ########################################
 
@@ -162,6 +167,32 @@ class JSONShared(object):
 
         # Set the comment string
         return " /* {} */".format(self.comment)
+
+    ########################################
+
+    def get_parent(self):
+        """
+        Traverse the objects until the parent is found.
+
+        Returns:
+            Reference to the parent object
+        """
+
+        # Assume this object is the parent
+        parent = self
+
+        # Traverse the linked list
+        head = parent.parent
+
+        # Was the head found?
+        while head is not None:
+
+            # Move up the list
+            parent = head
+            head = parent.parent
+
+        # Return the parent
+        return parent
 
 
 ########################################
@@ -430,7 +461,7 @@ class JSONDict(JSONShared):
 
     ########################################
 
-    def add_dict_entry(self, name, value=None):
+    def add_dict_entry(self, name, value=None, enabled=True):
         """
         Create a new JSONEntry record and add to the dictionary
         Take the key value pair and append it to the dictionary.
@@ -440,12 +471,13 @@ class JSONDict(JSONShared):
         Args:
             name: String for the JSONEntry name
             value: String to use as the value for the entry
+            enabled: Is this enabled by default?
         Returns:
             JSONEntry created that was added
         """
 
         # Create the key/value assignment
-        new_entry = JSONEntry(name, value=value)
+        new_entry = JSONEntry(name, value=value, enabled=enabled)
 
         # Add to the array
         self.add_item(new_entry)
@@ -472,7 +504,7 @@ class JSONDict(JSONShared):
             return 0
 
         # Disable if there are no values?
-        if self.disable_if_empty and self.value is not None:
+        if self.disable_if_empty and not self.value:
             return 0
 
         # Determine the indentation

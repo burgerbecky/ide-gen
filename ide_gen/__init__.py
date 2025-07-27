@@ -62,7 +62,8 @@ from .string_utils import xcode_quote_string_if_needed, \
     xcode_determine_source_type
 from .xcode_json import JSONShared, JSONEntry, JSONArray, JSONDict, \
     JSONObjects
-from .xcode import XCProject, PBXFileReference
+from .xcode import XCProject, PBXFileReference, PBXBuildFile, PBXGroup, \
+    PBXBuildRule, PBXFrameworksBuildPhase
 
 ########################################
 
@@ -105,5 +106,9 @@ __all__ = [
     "JSONDict",
     "JSONObjects",
     "XCProject",
-    "PBXFileReference"
+    "PBXFileReference",
+    "PBXBuildFile",
+    "PBXGroup",
+    "PBXBuildRule",
+    "PBXFrameworksBuildPhase"
 ]
